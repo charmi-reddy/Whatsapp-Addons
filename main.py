@@ -20,9 +20,9 @@ added = []
 invite_sent = []
 failed = []
 
-# Chrome options
+# Brave browser options (Chromium-based)
 options = Options()
-options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+options.binary_location = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
 
 driver = webdriver.Chrome(options=options)
 driver.get("https://web.whatsapp.com")
