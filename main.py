@@ -28,7 +28,7 @@ driver = webdriver.Chrome(options=options)
 driver.get("https://web.whatsapp.com")
 
 print("Scan QR code (30 seconds)...")
-time.sleep(30)
+time.sleep(45)
 
 # Search for the COMMUNITY (stable method)
 wait = WebDriverWait(driver, 40)
