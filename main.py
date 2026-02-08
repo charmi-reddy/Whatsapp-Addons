@@ -36,25 +36,63 @@ wait = WebDriverWait(driver, 40)
 
 for number in numbers:
     try:
-        # Try adding participant
-        driver.find_element(By.XPATH, '//span[text()="Add participant"]').click()
+        # Click "Add" button to open add participant dialog
+        add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, '//span[text()="Add"]')))
+        add_btn.click()
         time.sleep(2)
 
-        search = driver.find_element(By.XPATH, '//input[@type="text"]')
-        search.send_keys(number)
-        time.sleep(3)
+        # Find the search input and type the phone number (remove + for search)
+        search = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@type="text"]')))
+        clean_number = number.replace('+', '').strip()
+        search.send_keys(clean_number)
+        time.sleep(4)  # Wait for search results
 
-        search.send_keys(Keys.ENTER)
+        # Click on the search result (works for unsaved numbers too)
+        try:
+            # Look for any clickable result in the list
+            result = wait.until(EC.element_to_be_clickable((
+                By.XPATH, '//div[contains(@class,"_ak8q")]//div[@role="listitem"] | //div[@role="listitem"]//span[contains(text(),"' + clean_number[-10:] + '")]/..'
+            )))
+            result.click()
+            time.sleep(1)
+        except:
+            # Fallback: try clicking any checkbox or the first result
+            try:
+                checkbox = driver.find_element(By.XPATH, '//div[@role="checkbox"] | //input[@type="checkbox"]')
+                checkbox.click()
+            except:
+                # Last resort: press Enter
+                search.send_keys(Keys.ENTER)
+            time.sleep(1)
+
+        # Click the green checkmark button to confirm adding
+        time.sleep(1)
+        confirm_btn = wait.until(EC.element_to_be_clickable((
+            By.XPATH, '//span[@data-icon="checkmark-medium"] | //span[@data-icon="checkmark-light"] | //div[@aria-label="OK"]'
+        )))
+        confirm_btn.click()
+        time.sleep(5)
+
+        # Close any popup by pressing Escape
+        try:
+            driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
+        except:
+            pass
         time.sleep(2)
-
-        driver.find_element(By.XPATH, '//span[text()="Add"]').click()
-        time.sleep(10)
 
         print(f"✅ Added: {number}")
         added.append(number)
 
-    except Exception:
-        print(f"⚠️ Cannot add {number}, trying invite link...")
+    except Exception as e:
+        print(f"⚠️ Cannot add {number}: {e}")
+        print("Trying invite link...")
+        
+        # Press Escape to close any open dialogs
+        try:
+            driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
+            time.sleep(1)
+        except:
+            pass
 
         try:
             # Open personal chat
