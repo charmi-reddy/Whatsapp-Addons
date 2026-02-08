@@ -27,46 +27,11 @@ options.binary_location = r"C:\Program Files\BraveSoftware\Brave-Browser\Applica
 driver = webdriver.Chrome(options=options)
 driver.get("https://web.whatsapp.com")
 
-print("Scan QR code (30 seconds)...")
-time.sleep(45)
+print("Scan QR code and open the group you want to add people to...")
+print("You have 60 seconds - open the group and click on the group header to open group info.")
+input("Press ENTER when you're ready (group info panel should be open)...")
 
-# Search for the COMMUNITY (stable method)
 wait = WebDriverWait(driver, 40)
-
-print("Waiting for WhatsApp Web search box...")
-
-search_box = wait.until(
-    EC.presence_of_element_located(
-        (By.XPATH, '//div[@contenteditable="true"][@role="textbox"]')
-    )
-)
-
-search_box.click()
-time.sleep(1)
-search_box.clear()
-search_box.send_keys(COMMUNITY_NAME)
-time.sleep(2)
-search_box.send_keys(Keys.ENTER)
-time.sleep(5)
-
-# Click the GROUP inside the community
-print("Waiting for group inside the community...")
-
-group = wait.until(
-    EC.presence_of_element_located(
-        (By.XPATH, f'//span[@title="{GROUP_NAME}"]')
-    )
-)
-
-driver.execute_script("arguments[0].scrollIntoView(true);", group)
-time.sleep(1)
-group.click()
-time.sleep(5)
-
-
-# Open group info
-driver.find_element(By.XPATH, '//header').click()
-time.sleep(3)
 
 
 for number in numbers:
